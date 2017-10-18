@@ -69,8 +69,8 @@ public:
     void setBackgroundMode(BackgroundMode value) { _backgroundMode = value; _backgroundPropertiesChanged = true; }
     BackgroundMode getBackgroundMode() const { return _backgroundMode; }
 
-    void setKeyLightMode(uint32_t value) { _keyLightMode = value; _keyLightPropertiesChanged = true; }
-    uint32_t getKeyLightMode() const { return _keyLightMode; }
+    void setKeyLightMode(uint32_t value);
+    uint32_t getKeyLightMode() const;
 
     SkyboxPropertyGroup getSkyboxProperties() const { return resultWithReadLock<SkyboxPropertyGroup>([&] { return _skyboxProperties; }); }
     const StagePropertyGroup& getStageProperties() const { return _stageProperties; }

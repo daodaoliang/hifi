@@ -46,6 +46,7 @@ private:
     void updateKeyZoneItemFromEntity();
     void updateKeySunFromEntity();
     void updateKeyAmbientFromEntity();
+    void updateKeyLightFromEntity(const TypedEntityPointer& entity);
     void updateKeyBackgroundFromEntity(const TypedEntityPointer& entity);
     void updateAmbientMap();
     void updateSkyboxMap();

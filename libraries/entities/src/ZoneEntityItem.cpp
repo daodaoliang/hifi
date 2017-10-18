@@ -307,3 +307,12 @@ void ZoneEntityItem::resetRenderingPropertiesChanged() {
         _skyboxPropertiesChanged = false;
     });
 }
+
+void ZoneEntityItem::setKeyLightMode(uint32_t value) { 
+    _keyLightMode = value; 
+	_keyLightPropertiesChanged = true;
+}
+
+uint32_t ZoneEntityItem::getKeyLightMode() const { 
+    return _keyLightMode; 
+}

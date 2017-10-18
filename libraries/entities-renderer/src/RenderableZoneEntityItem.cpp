@@ -174,7 +174,10 @@ void ZoneEntityRenderer::doRenderUpdateSynchronousTyped(const ScenePointer& scen
     // FIXME one of the bools here could become true between being fetched and being reset, 
     // resulting in a lost update
     bool sunChanged = entity->keyLightPropertiesChanged();
+
     bool backgroundChanged = entity->backgroundPropertiesChanged();
+    bool keyLightChanged = entity->keyLightPropertiesChanged();
+
     bool skyboxChanged = entity->skyboxPropertiesChanged();
     entity->resetRenderingPropertiesChanged();
     _lastPosition = entity->getPosition();
@@ -214,8 +217,12 @@ void ZoneEntityRenderer::doRenderUpdateSynchronousTyped(const ScenePointer& scen
     if (sunChanged || skyboxChanged) {
         updateKeyAmbientFromEntity();
     }
+
     if (backgroundChanged || skyboxChanged) {
         updateKeyBackgroundFromEntity(entity);
+    }
+    if (keyLightChanged) {
+        updateKeyLightFromEntity(entity);
     }
 }
 
@@ -233,6 +240,7 @@ ItemKey ZoneEntityRenderer::getKey() {
 bool ZoneEntityRenderer::needsRenderUpdateFromTypedEntity(const TypedEntityPointer& entity) const {
     if (entity->keyLightPropertiesChanged() ||
         entity->backgroundPropertiesChanged() ||
+        entity->keyLightPropertiesChanged() ||
         entity->skyboxPropertiesChanged()) {
         return true;
     }
@@ -303,9 +311,15 @@ void ZoneEntityRenderer::updateKeyAmbientFromEntity() {
     }
 }
 
+void ZoneEntityRenderer::updateKeyLightFromEntity(const TypedEntityPointer& entity) {
+    setKeyLightMode((ComponentMode)entity->getKeyLightMode());
+}
+
 void ZoneEntityRenderer::updateKeyBackgroundFromEntity(const TypedEntityPointer& entity) {
     editBackground();
+
     setBackgroundMode(entity->getBackgroundMode());
+
     setSkyboxColor(_skyboxProperties.getColorVec3());
     setProceduralUserData(entity->getUserData());
     setSkyboxURL(_skyboxProperties.getURL());

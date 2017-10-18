@@ -661,9 +661,9 @@ function loaded() {
         var elZoneSections = document.querySelectorAll(".zone-section");
         allSections.push(elZoneSections);
 
-        var elZoneKeyLightModeInherit = document.getElementById("property-zone-component-mode-inherit");
-        var elZoneKeyLightModeDisabled = document.getElementById("property-zone-component-mode-disabled");
-        var elZoneKeyLightModeEnabled = document.getElementById("property-zone-component-mode-enabled");
+        var elZoneKeyLightModeInherit = document.getElementById("property-zone-keylight-mode-inherit");
+        var elZoneKeyLightModeDisabled = document.getElementById("property-zone-keylight-mode-disabled");
+        var elZoneKeyLightModeEnabled = document.getElementById("property-zone-keylight-mode-enabled");
 
         var elZoneStageSunModelEnabled = document.getElementById("property-zone-stage-sun-model-enabled");
 
@@ -1427,8 +1427,8 @@ function loaded() {
         elZoneStageDay.addEventListener('change', createEmitGroupNumberPropertyUpdateFunction('stage', 'day'));
         elZoneStageHour.addEventListener('change', createEmitGroupNumberPropertyUpdateFunction('stage', 'hour'));
 
-
         elZoneBackgroundMode.addEventListener('change', createEmitTextPropertyUpdateFunction('backgroundMode'));
+
         var zoneSkyboxColorChangeFunction = createEmitGroupColorPropertyUpdateFunction('skybox', 'color',
             elZoneSkyboxColorRed, elZoneSkyboxColorGreen, elZoneSkyboxColorBlue);
         elZoneSkyboxColorRed.addEventListener('change', zoneSkyboxColorChangeFunction);
