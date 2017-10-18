@@ -150,6 +150,11 @@ void ZoneEntityRenderer::doRender(RenderArgs* args) {
         if (_backgroundMode != BACKGROUND_MODE_INHERIT) {
             _backgroundStage->_currentFrame.pushBackground(_backgroundIndex);
         }
+
+        // The keylight only if the mode is not inherit
+        if (_keyLightMode != COMPONENT_MODE_INHERIT) {
+            _lightStage->_currentFrame.pushLight(_lightIndex, model::Light::SUN);
+        }
     }
 }
 
@@ -406,6 +411,10 @@ void ZoneEntityRenderer::updateSkyboxMap() {
 
 void ZoneEntityRenderer::setBackgroundMode(BackgroundMode mode) {
     _backgroundMode = mode;
+}
+
+void ZoneEntityRenderer::setKeyLightMode(ComponentMode mode) {
+    _keyLightMode = mode;
 }
 
 void ZoneEntityRenderer::setSkyboxColor(const glm::vec3& color) {

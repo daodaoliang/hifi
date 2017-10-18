@@ -12,6 +12,7 @@
 #include "SceneScriptingInterface.h"
 
 #include <procedural/ProceduralSkybox.h>
+#include <ComponentMode.h>
 
 float SceneScripting::Location::getLongitude() const {
     return _skyStage->getOriginLongitude();
@@ -126,6 +127,29 @@ QString SceneScripting::Stage::getBackgroundMode() const {
         return QString("skybox");
     default:
         return QString("inherit");
+    };
+}
+
+void SceneScripting::Stage::setKeyLightMode(const QString& mode) {
+    if (mode == QString("keylight inherit")) {
+        _skyStage->setKeyLightMode(COMPONENT_MODE_INHERIT);
+    }
+    if (mode == QString("keylight disabled")) {
+        _skyStage->setKeyLightMode(COMPONENT_MODE_DISABLED);
+    }
+    else { // (mode == QString("keylight enabled"))
+        _skyStage->setKeyLightMode(COMPONENT_MODE_ENABLED);
+    }
+}
+
+QString SceneScripting::Stage::getKeyLightMode() const {
+    switch (_skyStage->getKeyLightMode()) {
+    case COMPONENT_MODE_INHERIT:
+        return QString("keylight inherit");
+    case COMPONENT_MODE_DISABLED:
+        return QString("keylight disabled");
+    default:
+        return QString("keylight enabled");
     };
 }
 

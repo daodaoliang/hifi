@@ -19,6 +19,8 @@
 #include <BackgroundStage.h>
 #include <TextureCache.h>
 #include "RenderableEntityItem.h"
+#include <ComponentMode.h>
+
 #if 0
 #include <Model.h>
 #endif
@@ -49,7 +51,10 @@ private:
     void updateSkyboxMap();
     void setAmbientURL(const QString& ambientUrl);
     void setSkyboxURL(const QString& skyboxUrl);
+
     void setBackgroundMode(BackgroundMode mode);
+    void setKeyLightMode(ComponentMode mode);
+
     void setSkyboxColor(const glm::vec3& color);
     void setProceduralUserData(const QString& userData);
 
@@ -76,13 +81,18 @@ private:
     const model::LightPointer _sunLight{ std::make_shared<model::Light>() };
     const model::LightPointer _ambientLight{ std::make_shared<model::Light>() };
     const model::SunSkyStagePointer _background{ std::make_shared<model::SunSkyStage>() };
+
     BackgroundMode _backgroundMode{ BACKGROUND_MODE_INHERIT };
+    ComponentMode _keyLightMode{ COMPONENT_MODE_INHERIT };
 
     indexed_container::Index _sunIndex{ LightStage::INVALID_INDEX };
     indexed_container::Index _ambientIndex{ LightStage::INVALID_INDEX };
 
     BackgroundStagePointer _backgroundStage;
     BackgroundStage::Index _backgroundIndex{ BackgroundStage::INVALID_INDEX };
+
+    LightStagePointer _lightStage;
+    LightStage::Index _lightIndex{ LightStage::INVALID_INDEX };
 
     bool _needUpdate{ true };
     bool _needSunUpdate{ true };

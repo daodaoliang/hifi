@@ -170,12 +170,16 @@ public:
     void setBackgroundMode(BackgroundMode mode);
     BackgroundMode getBackgroundMode() const { return _backgroundMode; }
 
+    void setKeyLightMode(uint32_t mode);
+    uint32_t getKeyLightMode() const { return _keyLightMode; }
+
     // Skybox
     void setSkybox(const SkyboxPointer& skybox);
     const SkyboxPointer& getSkybox() const { valid(); return _skybox; }
 
 protected:
     BackgroundMode _backgroundMode = SKY_DEFAULT;
+    uint32_t _keyLightMode = 0;
 
     LightPointer _sunLight;
     mutable SkyboxPointer _skybox;

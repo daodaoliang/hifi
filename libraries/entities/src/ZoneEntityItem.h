@@ -17,6 +17,7 @@
 #include "EntityTree.h"
 #include "SkyboxPropertyGroup.h"
 #include "StagePropertyGroup.h"
+#include <ComponentMode.h>
 
 class ZoneEntityItem : public EntityItem {
 public:
@@ -68,6 +69,9 @@ public:
     void setBackgroundMode(BackgroundMode value) { _backgroundMode = value; _backgroundPropertiesChanged = true; }
     BackgroundMode getBackgroundMode() const { return _backgroundMode; }
 
+    void setKeyLightMode(uint32_t value) { _keyLightMode = value; _keyLightPropertiesChanged = true; }
+    uint32_t getKeyLightMode() const { return _keyLightMode; }
+
     SkyboxPropertyGroup getSkyboxProperties() const { return resultWithReadLock<SkyboxPropertyGroup>([&] { return _skyboxProperties; }); }
     const StagePropertyGroup& getStageProperties() const { return _stageProperties; }
 
@@ -106,6 +110,7 @@ protected:
     QString _compoundShapeURL;
 
     BackgroundMode _backgroundMode = BACKGROUND_MODE_INHERIT;
+    uint32_t _keyLightMode{ (uint32_t)COMPONENT_MODE_INHERIT };
 
     StagePropertyGroup _stageProperties;
     SkyboxPropertyGroup _skyboxProperties;

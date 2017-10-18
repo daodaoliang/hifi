@@ -218,6 +218,32 @@ void EntityItemProperties::setBackgroundModeFromString(const QString& background
     }
 }
 
+using ComponentPair = std::pair<const ComponentMode, const QString>;
+const std::array<ComponentPair, COMPONENT_MODE_ITEM_COUNT> COMPONENT_MODES = { {
+        ComponentPair{ COMPONENT_MODE_INHERIT,{ "inherit" } },
+        ComponentPair{ COMPONENT_MODE_DISABLED,{ "disabled" } },
+        ComponentPair{ COMPONENT_MODE_ENABLED,{ "enabled" } }
+} };
+
+QString EntityItemProperties::getKeyLightModeAsString() const {
+    return COMPONENT_MODES[_keyLightMode].second;
+}
+
+QString EntityItemProperties::getKeyLightModeString(uint32_t mode) {
+    return COMPONENT_MODES[mode].second;
+}
+
+void EntityItemProperties::setKeyLightModeFromString(const QString& keyLightMode) {
+    auto result = std::find_if(COMPONENT_MODES.begin(), COMPONENT_MODES.end(), [&](const ComponentPair& pair) {
+        return (pair.second == keyLightMode);
+    });
+
+    if (result != COMPONENT_MODES.end()) {
+        _keyLightMode = result->first;
+        _keyLightModeChanged = true;
+    }
+}
+
 EntityPropertyFlags EntityItemProperties::getChangedProperties() const {
     EntityPropertyFlags changedProperties;
 
@@ -302,7 +328,10 @@ EntityPropertyFlags EntityItemProperties::getChangedProperties() const {
     CHECK_PROPERTY_CHANGE(PROP_CERTIFICATE_ID, certificateID);
 
     CHECK_PROPERTY_CHANGE(PROP_NAME, name);
+
     CHECK_PROPERTY_CHANGE(PROP_BACKGROUND_MODE, backgroundMode);
+    CHECK_PROPERTY_CHANGE(PROP_KEYLIGHT_MODE, keyLightMode);
+
     CHECK_PROPERTY_CHANGE(PROP_SOURCE_URL, sourceUrl);
     CHECK_PROPERTY_CHANGE(PROP_VOXEL_VOLUME_SIZE, voxelVolumeSize);
     CHECK_PROPERTY_CHANGE(PROP_VOXEL_DATA, voxelData);
@@ -522,6 +551,7 @@ QScriptValue EntityItemProperties::copyToScriptValue(QScriptEngine* engine, bool
         _keyLight.copyToScriptValue(_desiredProperties, properties, engine, skipDefaults, defaultEntityProperties);
 
         COPY_PROPERTY_TO_QSCRIPTVALUE_GETTER(PROP_BACKGROUND_MODE, backgroundMode, getBackgroundModeAsString());
+        COPY_PROPERTY_TO_QSCRIPTVALUE_GETTER(PROP_KEYLIGHT_MODE, keyLightMode, getKeyLightModeAsString());
 
         _stage.copyToScriptValue(_desiredProperties, properties, engine, skipDefaults, defaultEntityProperties);
         _skybox.copyToScriptValue(_desiredProperties, properties, engine, skipDefaults, defaultEntityProperties);
@@ -712,6 +742,8 @@ void EntityItemProperties::copyFromScriptValue(const QScriptValue& object, bool 
     COPY_PROPERTY_FROM_QSCRIPTVALUE(collisionSoundURL, QString, setCollisionSoundURL);
 
     COPY_PROPERTY_FROM_QSCRITPTVALUE_ENUM(backgroundMode, BackgroundMode);
+    COPY_PROPERTY_FROM_QSCRITPTVALUE_ENUM(keyLightMode, KeyLightMode);
+
     COPY_PROPERTY_FROM_QSCRIPTVALUE(sourceUrl, QString, setSourceUrl);
     COPY_PROPERTY_FROM_QSCRIPTVALUE(voxelVolumeSize, glmVec3, setVoxelVolumeSize);
     COPY_PROPERTY_FROM_QSCRIPTVALUE(voxelData, QByteArray, setVoxelData);
@@ -862,6 +894,8 @@ void EntityItemProperties::merge(const EntityItemProperties& other) {
     COPY_PROPERTY_IF_CHANGED(collisionSoundURL);
 
     COPY_PROPERTY_IF_CHANGED(backgroundMode);
+    COPY_PROPERTY_IF_CHANGED(keyLightMode);
+
     COPY_PROPERTY_IF_CHANGED(sourceUrl);
     COPY_PROPERTY_IF_CHANGED(voxelVolumeSize);
     COPY_PROPERTY_IF_CHANGED(voxelData);
@@ -1050,7 +1084,10 @@ void EntityItemProperties::entityPropertyFlagsFromScriptValue(const QScriptValue
         ADD_PROPERTY_TO_MAP(PROP_VOXEL_DATA, VoxelData, voxelData, QByteArray);
         ADD_PROPERTY_TO_MAP(PROP_VOXEL_SURFACE_STYLE, VoxelSurfaceStyle, voxelSurfaceStyle, uint16_t);
         ADD_PROPERTY_TO_MAP(PROP_NAME, Name, name, QString);
+
         ADD_PROPERTY_TO_MAP(PROP_BACKGROUND_MODE, BackgroundMode, backgroundMode, BackgroundMode);
+        ADD_PROPERTY_TO_MAP(PROP_KEYLIGHT_MODE, KeyLightMode, keyLightMode, uint32_t);
+
         ADD_PROPERTY_TO_MAP(PROP_SOURCE_URL, SourceUrl, sourceUrl, QString);
         ADD_PROPERTY_TO_MAP(PROP_LINE_WIDTH, LineWidth, lineWidth, float);
         ADD_PROPERTY_TO_MAP(PROP_LINE_POINTS, LinePoints, linePoints, QVector<glm::vec3>);
@@ -1351,6 +1388,7 @@ bool EntityItemProperties::encodeEntityEditPacket(PacketType command, EntityItem
                 APPEND_ENTITY_PROPERTY(PROP_COMPOUND_SHAPE_URL, properties.getCompoundShapeURL());
 
                 APPEND_ENTITY_PROPERTY(PROP_BACKGROUND_MODE, (uint32_t)properties.getBackgroundMode());
+                APPEND_ENTITY_PROPERTY(PROP_KEYLIGHT_MODE, (uint32_t)properties.getKeyLightMode());
 
                 _staticSkybox.setProperties(properties);
                 _staticSkybox.appendToEditPacket(packetData, requestedProperties, propertyFlags, propertiesDidntFit, propertyCount, appendState);
@@ -1658,7 +1696,10 @@ bool EntityItemProperties::decodeEntityEditPacket(const unsigned char* data, int
 
         READ_ENTITY_PROPERTY_TO_PROPERTIES(PROP_SHAPE_TYPE, ShapeType, setShapeType);
         READ_ENTITY_PROPERTY_TO_PROPERTIES(PROP_COMPOUND_SHAPE_URL, QString, setCompoundShapeURL);
+
         READ_ENTITY_PROPERTY_TO_PROPERTIES(PROP_BACKGROUND_MODE, BackgroundMode, setBackgroundMode);
+        READ_ENTITY_PROPERTY_TO_PROPERTIES(PROP_KEYLIGHT_MODE, uint32_t, setKeyLightMode);
+
         properties.getSkybox().decodeFromEditPacket(propertyFlags, dataAt , processedBytes);
 
         READ_ENTITY_PROPERTY_TO_PROPERTIES(PROP_FLYING_ALLOWED, bool, setFlyingAllowed);
@@ -1843,6 +1884,7 @@ void EntityItemProperties::markAllChanged() {
     _keyLight.markAllChanged();
 
     _backgroundModeChanged = true;
+    _keyLightModeChanged = true;
 
     _animation.markAllChanged();
     _skybox.markAllChanged();
@@ -2181,6 +2223,10 @@ QList<QString> EntityItemProperties::listChangedProperties() {
     if (backgroundModeChanged()) {
         out += "backgroundMode";
     }
+    if (keyLightModeChanged()) {
+        out += "keyLightMode";
+    }
+
     if (voxelVolumeSizeChanged()) {
         out += "voxelVolumeSize";
     }

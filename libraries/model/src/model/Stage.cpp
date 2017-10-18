@@ -251,6 +251,11 @@ void SunSkyStage::setBackgroundMode(BackgroundMode mode) {
     invalidate();
 }
 
+void SunSkyStage::setKeyLightMode(uint32_t mode) {
+    _keyLightMode = mode;
+    invalidate();
+}
+
 void SunSkyStage::setSkybox(const SkyboxPointer& skybox) {
     _skybox = skybox;
     invalidate();

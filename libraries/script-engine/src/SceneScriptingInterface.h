@@ -121,6 +121,10 @@ namespace SceneScripting {
         void setBackgroundMode(const QString& mode);
         QString getBackgroundMode() const;
 
+        Q_PROPERTY(QString keyLightMode READ getKeyLightMode WRITE setKeyLightMode)
+        void setKeyLightMode(const QString& mode);
+        QString getKeyLightMode() const;
+
     protected:
         model::SunSkyStagePointer _skyStage;
         LocationPointer _location;
