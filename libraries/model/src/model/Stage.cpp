@@ -261,3 +261,8 @@ void SunSkyStage::setKeyLightMode(uint32_t mode) {
     _keyLightMode = mode;
     invalidate();
 }
+
+void SunSkyStage::setHazeMode(uint32_t mode) {
+    _hazeMode = mode;
+    invalidate();
+}

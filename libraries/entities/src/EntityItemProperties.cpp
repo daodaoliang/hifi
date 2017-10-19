@@ -27,6 +27,7 @@
 
 AnimationPropertyGroup EntityItemProperties::_staticAnimation;
 SkyboxPropertyGroup EntityItemProperties::_staticSkybox;
+HazePropertyGroup EntityItemProperties::_staticHaze;
 StagePropertyGroup EntityItemProperties::_staticStage;
 KeyLightPropertyGroup EntityItemProperties::_staticKeyLight;
 
@@ -71,6 +72,7 @@ void EntityItemProperties::debugDump() const {
 
     getAnimation().debugDump();
     getSkybox().debugDump();
+    getHaze().debugDump();
     getKeyLight().debugDump();
 
     qCDebug(entities) << "   changed properties...";
@@ -244,6 +246,35 @@ void EntityItemProperties::setKeyLightModeFromString(const QString& keyLightMode
     }
 }
 
+QString EntityItemProperties::getHazeModeAsString() const {
+    // return "inherit" if _hazeMode is not valid
+    if (_hazeMode < COMPONENT_MODE_ITEM_COUNT) {
+        return COMPONENT_MODES[_hazeMode].second;
+    } else {
+        return COMPONENT_MODES[0].second;
+    }
+}
+
+QString EntityItemProperties::getHazeModeString(uint32_t mode) {
+    // return "inherit" if mode is not valid
+    if (mode < COMPONENT_MODE_ITEM_COUNT) {
+        return COMPONENT_MODES[mode].second;
+    } else {
+        return COMPONENT_MODES[0].second;
+    }
+}
+
+void EntityItemProperties::setHazeModeFromString(const QString& hazeMode) {
+    auto result = std::find_if(COMPONENT_MODES.begin(), COMPONENT_MODES.end(), [&](const ComponentPair& pair) {
+        return (pair.second == hazeMode);
+    });
+
+    if (result != COMPONENT_MODES.end()) {
+        _hazeMode = result->first;
+        _hazeModeChanged = true;
+    }
+}
+
 EntityPropertyFlags EntityItemProperties::getChangedProperties() const {
     EntityPropertyFlags changedProperties;
 
@@ -331,6 +362,7 @@ EntityPropertyFlags EntityItemProperties::getChangedProperties() const {
 
     CHECK_PROPERTY_CHANGE(PROP_BACKGROUND_MODE, backgroundMode);
     CHECK_PROPERTY_CHANGE(PROP_KEYLIGHT_MODE, keyLightMode);
+    CHECK_PROPERTY_CHANGE(PROP_HAZE_MODE, hazeMode);
 
     CHECK_PROPERTY_CHANGE(PROP_SOURCE_URL, sourceUrl);
     CHECK_PROPERTY_CHANGE(PROP_VOXEL_VOLUME_SIZE, voxelVolumeSize);
@@ -379,6 +411,7 @@ EntityPropertyFlags EntityItemProperties::getChangedProperties() const {
     changedProperties += _keyLight.getChangedProperties();
     changedProperties += _skybox.getChangedProperties();
     changedProperties += _stage.getChangedProperties();
+    changedProperties += _haze.getChangedProperties();
 
     return changedProperties;
 }
@@ -559,6 +592,9 @@ QScriptValue EntityItemProperties::copyToScriptValue(QScriptEngine* engine, bool
         COPY_PROPERTY_TO_QSCRIPTVALUE(PROP_FLYING_ALLOWED, flyingAllowed);
         COPY_PROPERTY_TO_QSCRIPTVALUE(PROP_GHOSTING_ALLOWED, ghostingAllowed);
         COPY_PROPERTY_TO_QSCRIPTVALUE(PROP_FILTER_URL, filterURL);
+
+        COPY_PROPERTY_TO_QSCRIPTVALUE_GETTER(PROP_HAZE_MODE, hazeMode, getHazeModeAsString());
+        _haze.copyToScriptValue(_desiredProperties, properties, engine, skipDefaults, defaultEntityProperties);
     }
 
     // Web only
@@ -743,6 +779,7 @@ void EntityItemProperties::copyFromScriptValue(const QScriptValue& object, bool 
 
     COPY_PROPERTY_FROM_QSCRITPTVALUE_ENUM(backgroundMode, BackgroundMode);
     COPY_PROPERTY_FROM_QSCRITPTVALUE_ENUM(keyLightMode, KeyLightMode);
+    COPY_PROPERTY_FROM_QSCRITPTVALUE_ENUM(hazeMode, HazeMode);
 
     COPY_PROPERTY_FROM_QSCRIPTVALUE(sourceUrl, QString, setSourceUrl);
     COPY_PROPERTY_FROM_QSCRIPTVALUE(voxelVolumeSize, glmVec3, setVoxelVolumeSize);
@@ -771,6 +808,7 @@ void EntityItemProperties::copyFromScriptValue(const QScriptValue& object, bool 
     _keyLight.copyFromScriptValue(object, _defaultSettings);
     _skybox.copyFromScriptValue(object, _defaultSettings);
     _stage.copyFromScriptValue(object, _defaultSettings);
+    _haze.copyFromScriptValue(object, _defaultSettings);
 
     COPY_PROPERTY_FROM_QSCRIPTVALUE(xTextureURL, QString, setXTextureURL);
     COPY_PROPERTY_FROM_QSCRIPTVALUE(yTextureURL, QString, setYTextureURL);
@@ -895,6 +933,7 @@ void EntityItemProperties::merge(const EntityItemProperties& other) {
 
     COPY_PROPERTY_IF_CHANGED(backgroundMode);
     COPY_PROPERTY_IF_CHANGED(keyLightMode);
+	COPY_PROPERTY_IF_CHANGED(hazeMode);
 
     COPY_PROPERTY_IF_CHANGED(sourceUrl);
     COPY_PROPERTY_IF_CHANGED(voxelVolumeSize);
@@ -914,6 +953,7 @@ void EntityItemProperties::merge(const EntityItemProperties& other) {
     _keyLight.merge(other._keyLight);
     _skybox.merge(other._skybox);
     _stage.merge(other._stage);
+    _haze.merge(other._haze);
 
     COPY_PROPERTY_IF_CHANGED(xTextureURL);
     COPY_PROPERTY_IF_CHANGED(yTextureURL);
@@ -1146,6 +1186,24 @@ void EntityItemProperties::entityPropertyFlagsFromScriptValue(const QScriptValue
         ADD_PROPERTY_TO_MAP(PROP_FLYING_ALLOWED, FlyingAllowed, flyingAllowed, bool);
         ADD_PROPERTY_TO_MAP(PROP_GHOSTING_ALLOWED, GhostingAllowed, ghostingAllowed, bool);
         ADD_PROPERTY_TO_MAP(PROP_FILTER_URL, FilterURL, filterURL, QString);
+
+        ADD_PROPERTY_TO_MAP(PROP_HAZE_MODE, HazeMode, hazeMode, uint32_t);
+
+        ADD_GROUP_PROPERTY_TO_MAP(PROP_HAZE_RANGE, Haze, haze, HazeRange, hazeRange);
+        ADD_GROUP_PROPERTY_TO_MAP(PROP_HAZE_COLOR, Haze, haze, HazeColor, hazeColor);
+        ADD_GROUP_PROPERTY_TO_MAP(PROP_HAZE_GLARE_COLOR, Haze, haze, HazeGlareColor, hazeGlareColor);
+        ADD_GROUP_PROPERTY_TO_MAP(PROP_HAZE_ENABLE_GLARE, Haze, haze, HazeEnableGlare, hazeEnableGlare);
+        ADD_GROUP_PROPERTY_TO_MAP(PROP_HAZE_GLARE_ANGLE, Haze, haze, HazeGlareAngle, hazeGlareAngle);
+
+        ADD_GROUP_PROPERTY_TO_MAP(PROP_HAZE_ALTITUDE_EFFECT, Haze, haze, HazeAltitudeEffect, hazeAltitudeEfect);
+        ADD_GROUP_PROPERTY_TO_MAP(PROP_HAZE_CEILING, Haze, haze, HazeCeiling, hazeCeiling);
+        ADD_GROUP_PROPERTY_TO_MAP(PROP_HAZE_BASE_REF, Haze, haze, HazeBaseRef, hazeBaseRef);
+
+        ADD_GROUP_PROPERTY_TO_MAP(PROP_HAZE_BACKGROUND_BLEND, Haze, haze, HazeBackgroundBlend, hazeBackgroundBlend);
+
+        ADD_GROUP_PROPERTY_TO_MAP(PROP_HAZE_ATTENUATE_KEYLIGHT, Haze, haze, HazeAttenuateKeyLight, hazeAttenuateKeyLight);
+        ADD_GROUP_PROPERTY_TO_MAP(PROP_HAZE_KEYLIGHT_RANGE, Haze, haze, HazeKeyLightRange, hazeKeyLightRange);
+        ADD_GROUP_PROPERTY_TO_MAP(PROP_HAZE_KEYLIGHT_ALTITUDE, Haze, haze, HazeKeyLightAltitude, hazeKeyLightAltitude);
 
         ADD_PROPERTY_TO_MAP(PROP_DPI, DPI, dpi, uint16_t);
 
@@ -1396,6 +1454,10 @@ bool EntityItemProperties::encodeEntityEditPacket(PacketType command, EntityItem
                 APPEND_ENTITY_PROPERTY(PROP_FLYING_ALLOWED, properties.getFlyingAllowed());
                 APPEND_ENTITY_PROPERTY(PROP_GHOSTING_ALLOWED, properties.getGhostingAllowed());
                 APPEND_ENTITY_PROPERTY(PROP_FILTER_URL, properties.getFilterURL());
+
+                APPEND_ENTITY_PROPERTY(PROP_HAZE_MODE, (uint32_t)properties.getHazeMode());
+                _staticHaze.setProperties(properties);
+                _staticHaze.appendToEditPacket(packetData, requestedProperties, propertyFlags, propertiesDidntFit, propertyCount, appendState);
             }
 
             if (properties.getType() == EntityTypes::PolyVox) {
@@ -1705,7 +1767,10 @@ bool EntityItemProperties::decodeEntityEditPacket(const unsigned char* data, int
         READ_ENTITY_PROPERTY_TO_PROPERTIES(PROP_FLYING_ALLOWED, bool, setFlyingAllowed);
         READ_ENTITY_PROPERTY_TO_PROPERTIES(PROP_GHOSTING_ALLOWED, bool, setGhostingAllowed);
         READ_ENTITY_PROPERTY_TO_PROPERTIES(PROP_FILTER_URL, QString, setFilterURL);
-    }
+ 
+        READ_ENTITY_PROPERTY_TO_PROPERTIES(PROP_HAZE_MODE, uint32_t, setHazeMode);
+        properties.getHaze().decodeFromEditPacket(propertyFlags, dataAt, processedBytes);
+   }
 
     if (properties.getType() == EntityTypes::PolyVox) {
         READ_ENTITY_PROPERTY_TO_PROPERTIES(PROP_VOXEL_VOLUME_SIZE, glm::vec3, setVoxelVolumeSize);
@@ -1885,6 +1950,7 @@ void EntityItemProperties::markAllChanged() {
 
     _backgroundModeChanged = true;
     _keyLightModeChanged = true;
+	_hazeModeChanged = true;
 
     _animation.markAllChanged();
     _skybox.markAllChanged();
@@ -2227,6 +2293,10 @@ QList<QString> EntityItemProperties::listChangedProperties() {
         out += "keyLightMode";
     }
 
+    if (hazeModeChanged()) {
+        out += "hazeMode";
+    }
+
     if (voxelVolumeSizeChanged()) {
         out += "voxelVolumeSize";
     }
@@ -2322,6 +2392,7 @@ QList<QString> EntityItemProperties::listChangedProperties() {
     getKeyLight().listChangedProperties(out);
     getSkybox().listChangedProperties(out);
     getStage().listChangedProperties(out);
+    getHaze().listChangedProperties(out);
 
     return out;
 }
