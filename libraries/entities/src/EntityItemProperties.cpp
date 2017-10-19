@@ -361,11 +361,7 @@ EntityPropertyFlags EntityItemProperties::getChangedProperties() const {
     CHECK_PROPERTY_CHANGE(PROP_NAME, name);
 
     CHECK_PROPERTY_CHANGE(PROP_BACKGROUND_MODE, backgroundMode);
-<<<<<<< HEAD
     CHECK_PROPERTY_CHANGE(PROP_KEYLIGHT_MODE, keyLightMode);
-=======
-
->>>>>>> master
     CHECK_PROPERTY_CHANGE(PROP_HAZE_MODE, hazeMode);
 
     CHECK_PROPERTY_CHANGE(PROP_SOURCE_URL, sourceUrl);
@@ -786,11 +782,7 @@ void EntityItemProperties::copyFromScriptValue(const QScriptValue& object, bool 
     COPY_PROPERTY_FROM_QSCRIPTVALUE(collisionSoundURL, QString, setCollisionSoundURL);
 
     COPY_PROPERTY_FROM_QSCRITPTVALUE_ENUM(backgroundMode, BackgroundMode);
-<<<<<<< HEAD
     COPY_PROPERTY_FROM_QSCRITPTVALUE_ENUM(keyLightMode, KeyLightMode);
-=======
-
->>>>>>> master
     COPY_PROPERTY_FROM_QSCRITPTVALUE_ENUM(hazeMode, HazeMode);
 
     COPY_PROPERTY_FROM_QSCRIPTVALUE(sourceUrl, QString, setSourceUrl);
@@ -947,13 +939,8 @@ void EntityItemProperties::merge(const EntityItemProperties& other) {
     COPY_PROPERTY_IF_CHANGED(collisionSoundURL);
 
     COPY_PROPERTY_IF_CHANGED(backgroundMode);
-<<<<<<< HEAD
     COPY_PROPERTY_IF_CHANGED(keyLightMode);
 	COPY_PROPERTY_IF_CHANGED(hazeMode);
-=======
-
-    COPY_PROPERTY_IF_CHANGED(hazeMode);
->>>>>>> master
 
     COPY_PROPERTY_IF_CHANGED(sourceUrl);
     COPY_PROPERTY_IF_CHANGED(voxelVolumeSize);
@@ -2062,12 +2049,8 @@ void EntityItemProperties::markAllChanged() {
     _keyLight.markAllChanged();
 
     _backgroundModeChanged = true;
-<<<<<<< HEAD
     _keyLightModeChanged = true;
 	_hazeModeChanged = true;
-=======
-    _hazeModeChanged = true;
->>>>>>> master
 
     _animation.markAllChanged();
     _skybox.markAllChanged();
@@ -2409,12 +2392,10 @@ QList<QString> EntityItemProperties::listChangedProperties() {
     if (backgroundModeChanged()) {
         out += "backgroundMode";
     }
-<<<<<<< HEAD
+
     if (keyLightModeChanged()) {
         out += "keyLightMode";
     }
-=======
->>>>>>> master
 
     if (hazeModeChanged()) {
         out += "hazeMode";

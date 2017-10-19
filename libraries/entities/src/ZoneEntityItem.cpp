@@ -199,10 +199,7 @@ EntityPropertyFlags ZoneEntityItem::getEntityProperties(EncodeBitstreamParams& p
     requestedProperties += PROP_COMPOUND_SHAPE_URL;
 
     requestedProperties += PROP_BACKGROUND_MODE;
-<<<<<<< HEAD
     requestedProperties += PROP_KEYLIGHT_MODE;
-=======
->>>>>>> master
 
     withReadLock([&] {
         requestedProperties += _skyboxProperties.getEntityProperties(params);
@@ -261,12 +258,8 @@ void ZoneEntityItem::debugDump() const {
     qCDebug(entities) << "             getLastEdited:" << debugTime(getLastEdited(), now);
 
     qCDebug(entities) << "               _backgroundMode:" << EntityItemProperties::getBackgroundModeString(_backgroundMode);
-<<<<<<< HEAD
     qCDebug(entities) << "               _keyLightMode:" << EntityItemProperties::getKeyLightModeString(_keyLightMode);
 	qCDebug(entities) << "               _hazeMode:" << EntityItemProperties::getHazeModeString(_hazeMode);
-=======
-    qCDebug(entities) << "               _hazeMode:" << EntityItemProperties::getHazeModeString(_hazeMode);
->>>>>>> master
 
     _keyLightProperties.debugDump();
     _skyboxProperties.debugDump();
@@ -341,7 +334,6 @@ void ZoneEntityItem::resetRenderingPropertiesChanged() {
     });
 }
 
-<<<<<<< HEAD
 void ZoneEntityItem::setKeyLightMode(uint32_t value) { 
     _keyLightMode = value; 
 	_keyLightPropertiesChanged = true;
@@ -358,12 +350,6 @@ void ZoneEntityItem::setHazeMode(const uint32_t value) {
     else {
         _hazeMode = 0;
     }
-
-=======
-void ZoneEntityItem::setHazeMode(const uint32_t value) {
-    _hazeMode = value;
->>>>>>> master
-    _hazePropertiesChanged = true;
 }
 
 uint32_t ZoneEntityItem::getHazeMode() const {
