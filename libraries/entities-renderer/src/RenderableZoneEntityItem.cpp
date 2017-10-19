@@ -244,6 +244,7 @@ void ZoneEntityRenderer::doRenderUpdateSynchronousTyped(const ScenePointer& scen
     if (backgroundChanged || skyboxChanged) {
         updateKeyBackgroundFromEntity(entity);
     }
+    
     if (keyLightChanged) {
         updateKeyLightFromEntity(entity);
     }
@@ -267,8 +268,12 @@ ItemKey ZoneEntityRenderer::getKey() {
 bool ZoneEntityRenderer::needsRenderUpdateFromTypedEntity(const TypedEntityPointer& entity) const {
     if (entity->keyLightPropertiesChanged() ||
         entity->backgroundPropertiesChanged() ||
+<<<<<<< HEAD
         entity->keyLightPropertiesChanged() ||
 		entity->hazePropertiesChanged() ||
+=======
+        entity->hazePropertiesChanged() ||
+>>>>>>> master
         entity->skyboxPropertiesChanged()) {
         return true;
     }
@@ -339,10 +344,13 @@ void ZoneEntityRenderer::updateKeyAmbientFromEntity() {
     }
 }
 
+<<<<<<< HEAD
 void ZoneEntityRenderer::updateKeyLightFromEntity(const TypedEntityPointer& entity) {
     setKeyLightMode((ComponentMode)entity->getKeyLightMode());
 }
 
+=======
+>>>>>>> master
 void ZoneEntityRenderer::updateHazeFromEntity(const TypedEntityPointer& entity) {
     setHazeMode((ComponentMode)entity->getHazeMode());
 
@@ -483,10 +491,13 @@ void ZoneEntityRenderer::setBackgroundMode(BackgroundMode mode) {
     _backgroundMode = mode;
 }
 
+<<<<<<< HEAD
 void ZoneEntityRenderer::setKeyLightMode(ComponentMode mode) {
     _keyLightMode = mode;
 }
 
+=======
+>>>>>>> master
 void ZoneEntityRenderer::setHazeMode(ComponentMode mode) {
     _hazeMode = mode;
 }

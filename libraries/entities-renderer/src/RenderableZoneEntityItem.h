@@ -50,6 +50,7 @@ private:
     void updateKeyAmbientFromEntity();
     void updateKeyLightFromEntity(const TypedEntityPointer& entity);
 	void updateHazeFromEntity(const TypedEntityPointer& entity);
+
     void updateKeyBackgroundFromEntity(const TypedEntityPointer& entity);
     void updateAmbientMap();
     void updateSkyboxMap();
@@ -57,9 +58,13 @@ private:
     void setSkyboxURL(const QString& skyboxUrl);
 
     void setBackgroundMode(BackgroundMode mode);
+<<<<<<< HEAD
     void setKeyLightMode(ComponentMode mode);
 	void setHazeMode(ComponentMode mode);
 
+=======
+    void setHazeMode(ComponentMode mode);
+>>>>>>> master
     void setSkyboxColor(const glm::vec3& color);
     void setProceduralUserData(const QString& userData);
 
@@ -86,10 +91,17 @@ private:
     const model::LightPointer _sunLight{ std::make_shared<model::Light>() };
     const model::LightPointer _ambientLight{ std::make_shared<model::Light>() };
     const model::SunSkyStagePointer _background{ std::make_shared<model::SunSkyStage>() };
+<<<<<<< HEAD
 
     BackgroundMode _backgroundMode{ BACKGROUND_MODE_INHERIT };
     ComponentMode _keyLightMode{ COMPONENT_MODE_INHERIT };
 	ComponentMode _hazeMode{ COMPONENT_MODE_INHERIT };
+=======
+    const model::HazePointer _haze{ std::make_shared<model::Haze>() };
+
+    BackgroundMode _backgroundMode{ BACKGROUND_MODE_INHERIT };
+    ComponentMode _hazeMode{ COMPONENT_MODE_INHERIT };
+>>>>>>> master
 
     indexed_container::Index _sunIndex{ LightStage::INVALID_INDEX };
     indexed_container::Index _ambientIndex{ LightStage::INVALID_INDEX };

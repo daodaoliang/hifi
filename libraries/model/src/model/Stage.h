@@ -219,6 +219,7 @@ public:
 
 protected:
     BackgroundMode _backgroundMode = SKY_DEFAULT;
+
     uint32_t _keyLightMode = 0;
     uint32_t _hazeMode = (uint32_t)HAZE_OFF;
     

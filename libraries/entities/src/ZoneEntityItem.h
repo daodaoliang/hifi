@@ -166,6 +166,26 @@ protected:
     float _hazeKeyLightRange{ HazePropertyGroup::DEFAULT_HAZE_KEYLIGHT_RANGE };
     float _hazeKeyLightAltitude{ HazePropertyGroup::DEFAULT_HAZE_KEYLIGHT_ALTITUDE };
 
+<<<<<<< HEAD
+=======
+    uint8_t _hazeMode{ (uint8_t)COMPONENT_MODE_INHERIT };
+
+    float _hazeRange{ HazePropertyGroup::DEFAULT_HAZE_RANGE };
+    xColor _hazeColor{ HazePropertyGroup::DEFAULT_HAZE_COLOR };
+    xColor _hazeGlareColor{ HazePropertyGroup::DEFAULT_HAZE_GLARE_COLOR };
+    bool _hazeEnableGlare{ false };
+    float _hazeGlareAngle{ HazePropertyGroup::DEFAULT_HAZE_GLARE_ANGLE };
+
+    float _hazeCeiling{ HazePropertyGroup::DEFAULT_HAZE_CEILING };
+    float _hazeBaseRef{ HazePropertyGroup::DEFAULT_HAZE_BASE_REF };
+
+    float _hazeBackgroundBlend{ HazePropertyGroup::DEFAULT_HAZE_BACKGROUND_BLEND };
+
+    bool _hazeAttenuateKeyLight{ false };
+    float _hazeKeyLightRange{ HazePropertyGroup::DEFAULT_HAZE_KEYLIGHT_RANGE };
+    float _hazeKeyLightAltitude{ HazePropertyGroup::DEFAULT_HAZE_KEYLIGHT_ALTITUDE };
+
+>>>>>>> master
     SkyboxPropertyGroup _skyboxProperties;
     HazePropertyGroup _hazeProperties;
     StagePropertyGroup _stageProperties;

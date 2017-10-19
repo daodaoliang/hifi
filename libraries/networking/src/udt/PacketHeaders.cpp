@@ -29,8 +29,9 @@ PacketVersion versionForPacketType(PacketType packetType) {
         case PacketType::EntityAdd:
         case PacketType::EntityEdit:
         case PacketType::EntityData:
+            return VERSION_ENTITIES_STROKE_COLOR_PROPERTY;
         case PacketType::EntityPhysics:
-            return VERSION_UPDATE_ZONE;
+            return VERSION_ZONE_UPDATE;
         case PacketType::EntityQuery:
             return static_cast<PacketVersion>(EntityQueryPacketVersion::JSONFilterWithFamilyTree);
         case PacketType::AvatarIdentity:

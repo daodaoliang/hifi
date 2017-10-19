@@ -271,7 +271,7 @@ const PacketVersion VERSION_ENTITIES_HAS_CERTIFICATE_PROPERTIES = 74;
 const PacketVersion VERSION_ENTITIES_HAZE = 75;
 const PacketVersion VERSION_ENTITIES_UV_MODE_PROPERTY = 76;
 const PacketVersion VERSION_ENTITIES_STROKE_COLOR_PROPERTY = 77;
-const PacketVersion VERSION_UPDATE_ZONE = 78;
+const PacketVersion VERSION_ZONE_UPDATE = 78;
 
 enum class EntityQueryPacketVersion: PacketVersion {
     JSONFilter = 18,
