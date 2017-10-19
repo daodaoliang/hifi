@@ -37,12 +37,12 @@ ZoneEntityRenderer::ZoneEntityRenderer(const EntityItemPointer& entity)
 }
 
 void ZoneEntityRenderer::onRemoveFromSceneTyped(const TypedEntityPointer& entity) {
-    if (_stage) {
+    if (_lightStage) {
         if (!LightStage::isIndexInvalid(_sunIndex)) {
-            _stage->removeLight(_sunIndex);
+            _lightStage->removeLight(_sunIndex);
         }
         if (!LightStage::isIndexInvalid(_ambientIndex)) {
-            _stage->removeLight(_ambientIndex);
+            _lightStage->removeLight(_ambientIndex);
 
         }
     }
@@ -85,9 +85,9 @@ void ZoneEntityRenderer::doRender(RenderArgs* args) {
         }
     }
 #endif
-    if (!_stage) {
-        _stage = args->_scene->getStage<LightStage>();
-        assert(_stage);
+    if (!_lightStage) {
+        _lightStage = args->_scene->getStage<LightStage>();
+        assert(_lightStage);
     }
 
     if (!_backgroundStage) {
@@ -100,9 +100,9 @@ void ZoneEntityRenderer::doRender(RenderArgs* args) {
         if (_needSunUpdate) {
             // Do we need to allocate the light in the stage ?
             if (LightStage::isIndexInvalid(_sunIndex)) {
-                _sunIndex = _stage->addLight(_sunLight);
+                _sunIndex = _lightStage->addLight(_sunLight);
             } else {
-                _stage->updateLightArrayBuffer(_sunIndex);
+                _lightStage->updateLightArrayBuffer(_sunIndex);
             }
             _needSunUpdate = false;
         }
@@ -115,9 +115,9 @@ void ZoneEntityRenderer::doRender(RenderArgs* args) {
         if (_needAmbientUpdate) {
             // Do we need to allocate the light in the stage ?
             if (LightStage::isIndexInvalid(_ambientIndex)) {
-                _ambientIndex = _stage->addLight(_ambientLight);
+                _ambientIndex = _lightStage->addLight(_ambientLight);
             } else {
-                _stage->updateLightArrayBuffer(_ambientIndex);
+                _lightStage->updateLightArrayBuffer(_ambientIndex);
             }
             _needAmbientUpdate = false;
         }
@@ -139,21 +139,18 @@ void ZoneEntityRenderer::doRender(RenderArgs* args) {
     if (_visible) {
         // FInally, push the light visible in the frame
         // THe directional key light for sure
-        _stage->_currentFrame.pushSunLight(_sunIndex);
+        if (_keyLightMode != COMPONENT_MODE_INHERIT) {
+            _lightStage->_currentFrame.pushSunLight(_sunIndex);
+        }
 
         // The ambient light only if it has a valid texture to render with
         if (_validAmbientTexture || _validSkyboxTexture) {
-            _stage->_currentFrame.pushAmbientLight(_ambientIndex);
+            _lightStage->_currentFrame.pushAmbientLight(_ambientIndex);
         }
 
         // The background only if the mode is not inherit
         if (_backgroundMode != BACKGROUND_MODE_INHERIT) {
             _backgroundStage->_currentFrame.pushBackground(_backgroundIndex);
-        }
-
-        // The keylight only if the mode is not inherit
-        if (_keyLightMode != COMPONENT_MODE_INHERIT) {
-            _lightStage->_currentFrame.pushLight(_lightIndex, model::Light::SUN);
         }
     }
 }

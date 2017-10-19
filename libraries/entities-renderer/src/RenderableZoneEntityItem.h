@@ -78,7 +78,7 @@ private:
     QString _lastShapeURL;
 #endif
 
-    LightStagePointer _stage;
+    LightStagePointer _lightStage;
     const model::LightPointer _sunLight{ std::make_shared<model::Light>() };
     const model::LightPointer _ambientLight{ std::make_shared<model::Light>() };
     const model::SunSkyStagePointer _background{ std::make_shared<model::SunSkyStage>() };
@@ -91,9 +91,6 @@ private:
 
     BackgroundStagePointer _backgroundStage;
     BackgroundStage::Index _backgroundIndex{ BackgroundStage::INVALID_INDEX };
-
-    LightStagePointer _lightStage;
-    LightStage::Index _lightIndex{ LightStage::INVALID_INDEX };
 
     bool _needUpdate{ true };
     bool _needSunUpdate{ true };
