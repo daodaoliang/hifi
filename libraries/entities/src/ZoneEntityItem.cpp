@@ -63,6 +63,7 @@ EntityItemProperties ZoneEntityItem::getProperties(EntityPropertyFlags desiredPr
 
     COPY_ENTITY_PROPERTY_TO_PROPERTIES(backgroundMode, getBackgroundMode);
     COPY_ENTITY_PROPERTY_TO_PROPERTIES(keyLightMode, getKeyLightMode);
+    COPY_ENTITY_PROPERTY_TO_PROPERTIES(hazeMode, getHazeMode);
 
     // Contains a QString property, must be synchronized
     withReadLock([&] {
@@ -73,7 +74,6 @@ EntityItemProperties ZoneEntityItem::getProperties(EntityPropertyFlags desiredPr
     COPY_ENTITY_PROPERTY_TO_PROPERTIES(ghostingAllowed, getGhostingAllowed);
     COPY_ENTITY_PROPERTY_TO_PROPERTIES(filterURL, getFilterURL);
 
-    COPY_ENTITY_PROPERTY_TO_PROPERTIES(hazeMode, getHazeMode);
     _hazeProperties.getProperties(properties);
 
     return properties;
@@ -112,6 +112,7 @@ bool ZoneEntityItem::setSubClassProperties(const EntityItemProperties& propertie
 
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(backgroundMode, setBackgroundMode);
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(keyLightMode, setKeyLightMode);
+    SET_ENTITY_PROPERTY_FROM_PROPERTIES(hazeMode, setHazeMode);
 
     // Contains a QString property, must be synchronized
     withWriteLock([&] {
@@ -122,7 +123,6 @@ bool ZoneEntityItem::setSubClassProperties(const EntityItemProperties& propertie
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(ghostingAllowed, setGhostingAllowed);
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(filterURL, setFilterURL);
 	
-    SET_ENTITY_PROPERTY_FROM_PROPERTIES(hazeMode, setHazeMode);
     _hazePropertiesChanged = _hazeProperties.setProperties(properties);
 
     somethingChanged = somethingChanged || _keyLightPropertiesChanged || _stagePropertiesChanged || _skyboxPropertiesChanged || _hazePropertiesChanged;
@@ -158,6 +158,7 @@ int ZoneEntityItem::readEntitySubclassDataFromBuffer(const unsigned char* data, 
 
     READ_ENTITY_PROPERTY(PROP_BACKGROUND_MODE, BackgroundMode, setBackgroundMode);
     READ_ENTITY_PROPERTY(PROP_KEYLIGHT_MODE, uint32_t, setKeyLightMode);
+    READ_ENTITY_PROPERTY(PROP_HAZE_MODE, uint32_t, setHazeMode);
 
     int bytesFromSkybox;
     withWriteLock([&] {
@@ -171,8 +172,6 @@ int ZoneEntityItem::readEntitySubclassDataFromBuffer(const unsigned char* data, 
     READ_ENTITY_PROPERTY(PROP_FLYING_ALLOWED, bool, setFlyingAllowed);
     READ_ENTITY_PROPERTY(PROP_GHOSTING_ALLOWED, bool, setGhostingAllowed);
     READ_ENTITY_PROPERTY(PROP_FILTER_URL, QString, setFilterURL);
-
-    READ_ENTITY_PROPERTY(PROP_HAZE_MODE, uint32_t, setHazeMode);
 
     int bytesFromHaze = _hazeProperties.readEntitySubclassDataFromBuffer(dataAt, (bytesLeftToRead - bytesRead), args,
         propertyFlags, overwriteLocalData, _hazePropertiesChanged);
@@ -200,6 +199,7 @@ EntityPropertyFlags ZoneEntityItem::getEntityProperties(EncodeBitstreamParams& p
 
     requestedProperties += PROP_BACKGROUND_MODE;
     requestedProperties += PROP_KEYLIGHT_MODE;
+    requestedProperties += PROP_HAZE_MODE;
 
     withReadLock([&] {
         requestedProperties += _skyboxProperties.getEntityProperties(params);
@@ -209,7 +209,6 @@ EntityPropertyFlags ZoneEntityItem::getEntityProperties(EncodeBitstreamParams& p
     requestedProperties += PROP_GHOSTING_ALLOWED;
     requestedProperties += PROP_FILTER_URL;
 
-    requestedProperties += PROP_HAZE_MODE;
     requestedProperties += _hazeProperties.getEntityProperties(params);
 
     return requestedProperties;
@@ -237,6 +236,7 @@ void ZoneEntityItem::appendSubclassData(OctreePacketData* packetData, EncodeBits
 
     APPEND_ENTITY_PROPERTY(PROP_BACKGROUND_MODE, (uint32_t)getBackgroundMode()); // could this be a uint16??
     APPEND_ENTITY_PROPERTY(PROP_KEYLIGHT_MODE, (uint32_t)getKeyLightMode());
+    APPEND_ENTITY_PROPERTY(PROP_HAZE_MODE, (uint32_t)getHazeMode());
 
     _skyboxProperties.appendSubclassData(packetData, params, modelTreeElementExtraEncodeData, requestedProperties,
         propertyFlags, propertiesDidntFit, propertyCount, appendState);
@@ -245,7 +245,6 @@ void ZoneEntityItem::appendSubclassData(OctreePacketData* packetData, EncodeBits
     APPEND_ENTITY_PROPERTY(PROP_GHOSTING_ALLOWED, getGhostingAllowed());
     APPEND_ENTITY_PROPERTY(PROP_FILTER_URL, getFilterURL());
 
-    APPEND_ENTITY_PROPERTY(PROP_HAZE_MODE, (uint32_t)getHazeMode());
     _hazeProperties.appendSubclassData(packetData, params, modelTreeElementExtraEncodeData, requestedProperties,
         propertyFlags, propertiesDidntFit, propertyCount, appendState);
 }
@@ -335,7 +334,12 @@ void ZoneEntityItem::resetRenderingPropertiesChanged() {
 }
 
 void ZoneEntityItem::setKeyLightMode(uint32_t value) { 
-    _keyLightMode = value; 
+    if (value < COMPONENT_MODE_ITEM_COUNT) {
+        _keyLightMode = value;
+    }
+    else {
+        _keyLightMode = 0;
+    }
 	_keyLightPropertiesChanged = true;
 }
 
@@ -350,6 +354,7 @@ void ZoneEntityItem::setHazeMode(const uint32_t value) {
     else {
         _hazeMode = 0;
     }
+    _hazePropertiesChanged = true;
 }
 
 uint32_t ZoneEntityItem::getHazeMode() const {

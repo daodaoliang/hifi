@@ -198,9 +198,9 @@ void ZoneEntityRenderer::doRenderUpdateSynchronousTyped(const ScenePointer& scen
     bool sunChanged = entity->keyLightPropertiesChanged();
     bool backgroundChanged = entity->backgroundPropertiesChanged();
     bool keyLightChanged = entity->keyLightPropertiesChanged();
+    bool hazeChanged = entity->hazePropertiesChanged();
 
     bool skyboxChanged = entity->skyboxPropertiesChanged();
-    bool hazeChanged = entity->hazePropertiesChanged();
 
     entity->resetRenderingPropertiesChanged();
     _lastPosition = entity->getPosition();
